@@ -1,94 +1,81 @@
 var _ = function(element) {
-  var u = {
-    first: function() {
-      return element[0];
-    },
-    last: function() {
-      return element[element.length - 1];
-    },
-    without: function(...values) {
-      let newArr = element.slice(0);
-
-      values.forEach(value => {
-        let idx = newArr.indexOf(value);
-        newArr.splice(idx, 1);
-      });
-      return newArr;
-    },
-    lastIndexOf(value) {
-      return element.lastIndexOf(value);
-    },
-    sample(qty) {
-      if (qty === undefined) {
-        return element[0];
-      } else {
-        return element.slice(0, 4);
-      }
-    },
-    findWhere(obj) {
-      return element.filter(ob => {
-        let objValues = Object.values(obj);
-        let obValues = Object.values(ob);
-        return objValues.every(val => obValues.includes(val));
-      })[0];
-    },
-    where(obj) {
-      return element.filter(ob => {
-        let objValues = Object.values(obj);
-        let obValues = Object.values(ob);
-        return objValues.every(val => obValues.includes(val));
-      });
-    },
-    pluck(key) {
-      return element.filter(ob => {
-        let obValues = Object.keys(ob);
-        return obValues.includes(key);
-      }).map(ob => ob[key]);
-    },
-    keys() {
-      return Object.keys(element);
-    },
-    values() {
-      return Object.values(element);
-    },
-
-    pick(...keys) {
-      let newObj = [];
-      let oldProps = Object.entries(element);
-      oldProps.forEach(([key, value]) => {
-        if (keys.includes(key)) {
-          newObj.push([key, value]);
-        }
-      });
-
-      return Object.fromEntries(newObj);
-    },
-
-    omit(...keys) {
-      let newObj = [];
-      let oldProps = Object.entries(element);
-      oldProps.forEach(([key, value]) => {
-        if (!keys.includes(key)) {
-          newObj.push([key, value]);
-        }
-      });
-      return Object.fromEntries(newObj);
-    },
-
-    has(ownProp) {
-      element.hasOwnProperty = Object.prototype.hasOwnProperty.bind(element);
-      return element.hasOwnProperty(ownProp);
-    },
+  return {
+    first: () => first.call(this, element),
+    last: () => last.call(this, element),
+    without: (...values) => without.call(this, element, values),
+    lastIndexOf: (val) => lastIndexOf.call(this, element, val),
+    sample: (qty) => sample.call(this, element, qty),
+    findWhere: (obj) => where.call(this, element, obj)[0],
+    where: (obj) => where.call(this, element, obj),
+    pluck: (key) => pluck.call(this, element, key),
+    keys: () => Object.keys.call(this, element),
+    values: () => Object.values.call(this, element),
+    pick: (...keys) => pick.call(this, element, keys),
+    omit: (...keys) => omit.call(this, element, keys),
+    has: (ownProp) => Object.prototype.hasOwnProperty.call(this, ownProp),
   };
-
-  (function(methods) {
-    methods.forEach(method => {
-      u[method] = _[method];
-    });
-  }(['isElement', 'isArray', 'isObject', 'isFunction', 'isBoolean', 'isString', 'isNumber']));
-
-  return u;
 };
+
+function first(element) {
+  return element[0];
+}
+
+function last(element) {
+  return element[element.length - 1];
+}
+
+function without(element, values) {
+  return element.filter(el => !values.includes(el));
+}
+
+function lastIndexOf(element, val) {
+  return element.lastIndexOf(val);
+}
+
+function sample(element, qty) {
+  return qty ? element.slice(0, qty) : element[0];
+}
+
+function where(element, obj) {
+  return element.filter(ob => {
+    return Object.values(obj).every(val => {
+      return Object.values(ob).includes(val);
+    });
+  });
+}
+
+function pluck(element, key) {
+  return element.filter(ob => ob[key]).map(ob => ob[key]);
+}
+
+function pick(element, keys) {
+  let newObj = [];
+  let oldProps = Object.entries(element);
+  oldProps.forEach(([key, value]) => {
+    if (keys.includes(key)) {
+      newObj.push([key, value]);
+    }
+  });
+
+  return Object.fromEntries(newObj);
+}
+
+function omit(element, keys) {
+  let newObj = [];
+  let oldProps = Object.entries(element);
+  oldProps.forEach(([key, value]) => {
+    if (!keys.includes(key)) {
+      newObj.push([key, value]);
+    }
+  });
+  return Object.fromEntries(newObj);
+}
+
+(function(methods) {
+  methods.forEach(method => {
+    _()[method] = _[method];
+  });
+}(['isElement', 'isArray', 'isObject', 'isFunction', 'isBoolean', 'isString', 'isNumber']));
 
 _.range = function(...values) {
   if (values.length === 1) {
