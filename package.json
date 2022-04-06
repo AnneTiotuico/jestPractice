@@ -1,0 +1,14 @@
+{
+  "name": "jestpractice",
+  "version": "1.0.0",
+  "description": "practicing writing jest tests",
+  "main": "utilities.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
+}
